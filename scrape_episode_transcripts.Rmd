@@ -1,0 +1,65 @@
+---
+title: ''
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Scrape all LOST tv show transcripts
+
+```{r}
+library(tidyverse)
+library(rvest)
+```
+
+```{r}
+page <- "https://lostpedia.fandom.com/wiki/Portal:Transcripts"
+
+urls <- read_html(page) %>%
+    html_nodes("ol a") %>%
+    html_attr("href") %>%
+    as_tibble() %>%
+    rename(url = value) %>%
+    mutate(url = paste0("https://lostpedia.fandom.com", url))
+
+# season 0 is "LOST: Missing Pieces"
+urls <- urls %>%
+    mutate(season = rep(c(1:6, 0), c(24, 23, 22, 13, 16, 16, 13))) %>%
+    group_by(season) %>%
+    mutate(episode = row_number()) %>%
+    ungroup()
+
+# function to scrape text of episode transcript
+scrape_page <- function(page){
+    page %>%
+        read_html() %>%
+        html_nodes("p") %>%
+        html_text() %>%
+        as_tibble()
+}
+
+#scrape all transcripts from in url column
+lost_transcripts <- urls %>%
+    mutate(transcript = map(url, scrape_page))
+
+#tidy transcripts with one transcript line per row
+lost_transcripts_unnest <- lost_transcripts %>%
+    unnest(transcript) %>%
+    rename(transcript = value) %>%
+    filter(str_starts(transcript, "[A-Z0-9 ]+: ")) %>%
+    separate(transcript, c("character", "line"), sep = ": ", extra = "merge") %>%
+    mutate(line = str_remove_all(line, "\\[[[:alpha:][:punct:] ]+\\]")) %>%
+    mutate(character = str_to_title(character)) %>% 
+    mutate(character = str_squish(character),
+           line = str_squish(line)) %>%
+    filter(line != "")
+```
+
+```{r}
+write_csv(lost_transcripts_unnest, "data/lost_transcripts.csv")
+```
+
