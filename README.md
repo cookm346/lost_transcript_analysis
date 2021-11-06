@@ -4,6 +4,12 @@
     library(tidytext)
     library(scales)
     library(glue)
+    library(ggimage)
+    library(jpeg)
+    library(grid)
+
+    theme_update(plot.title = element_text(size = 18, face = "bold"),
+              plot.subtitle = element_text(size = 12, color = "grey30"))
 
 Below reads in the data I scraped from lostpedia.fandom.com. The
 Rmarkdown to scrape episode transcripts can be found in the
@@ -19,30 +25,40 @@ scrape\_episode\_transcripts.Rmd file.
 
 ### Which Lost characters have the most lines?
 
+    bg_img <- readJPEG("images/dharma_logo_alpha_10.jpg")
+
+    top_n  <- 30
+
     lost %>%
-        mutate(character = fct_lump(character, 30)) %>%
+        mutate(character = fct_lump(character, top_n)) %>%
         filter(character != "Other") %>%
         count(character) %>%
         mutate(character = fct_reorder(character, n)) %>%
         ggplot(aes(n, character)) +
-        geom_col() +
-        labs(x = "Count",
+        annotation_custom(rasterGrob(bg_img, width = unit(1, "npc"), height = unit(1, "npc")), 
+                      -Inf, Inf, -Inf, Inf) +
+        geom_col(alpha = 0.85) +
+        labs(x = "Lines",
              y = NULL,
-             title = "Jack, Sawyer, and Locke have the most lines",
-             subtitle = "The top 30 characters are shown") +
+             title = "Jack, Sawyer, and Locke have the most lines in LOST",
+             subtitle = glue("The top {top_n} characters are shown")) +
         scale_x_continuous(labels = comma_format())
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
 <br />
 
 ### Which characters have the most lines per season?
+
+    # https://stackoverflow.com/questions/44688623/adding-custom-images-to-ggplot-facets
+    # https://lostpedia.fandom.com/wiki/DHARMA_Initiative_stations
 
     lost %>%
         count(season, character) %>%
         group_by(season) %>%
         slice_max(n, n = 20) %>% 
         ungroup() %>%
+        mutate(character = if_else(character == "Christian Shephard", "Christian", character)) %>%
         mutate(character = reorder_within(character, n, season)) %>%
         mutate(season = glue("Season {season}")) %>%
         ggplot(aes(n, character, fill = season)) +
@@ -55,7 +71,7 @@ scrape\_episode\_transcripts.Rmd file.
         scale_y_reordered() +
         theme(legend.position = "none")
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
 <br />
 
@@ -72,20 +88,30 @@ scrape\_episode\_transcripts.Rmd file.
         group_by(season) %>%
         mutate(rank = rank(-n)) %>%
         ungroup() %>%
+        mutate(label_s1 = ifelse(season == 1, character, "")) %>%
+        mutate(label_s6 = ifelse(season == 6, character, "")) %>%
         mutate(character = fct_reorder(character, rank, .fun = mean)) %>%
+        mutate(character = fct_rev(character)) %>% 
         ggplot(aes(season, rank, group = character)) +
-        geom_line(aes(color = character), size = 5, alpha = 0.5) +
+        annotation_custom(rasterGrob(bg_img, width = unit(1, "npc"), height = unit(1, "npc")), 
+                  -Inf, Inf, -Inf, Inf) +
+        geom_line(aes(color = character), size = 5, alpha = 0.75) +
         geom_point(aes(color = character), size = 7) +
         geom_point(size = 1.5, color = "white") +
+        geom_text(aes(label = label_s1), nudge_x = -0.5) +
+        geom_text(aes(label = label_s6), nudge_x = 0.5) +
         scale_y_reverse(breaks = 1:top_n_characters, minor_breaks = 1) +
         scale_x_continuous(breaks = 1:6) +
         labs(x = "Season",
              y = "Rank number of lines",
              color = NULL,
              title = "Jack has the most lines for all seasons except season 5",
-             subtitle = "Note: Desmond and Ben have no rank before they arrive in seasons 2 and 3, respectively")
+             subtitle = "Note: Desmond and Ben have no rank before they arrive in seasons 2 and 3, respectively") +
+        scale_color_manual(values = c("#909090", "#7e7e7e", "#6c6c6c", "#5a5a5a", 
+                                      "#484848", "#363636", "#242424", "#121212", "#000000")) +
+        theme(legend.position = "none")
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 <br />
 
@@ -112,7 +138,7 @@ scrape\_episode\_transcripts.Rmd file.
              title = "Some words are very characteristic of certain Lost seasons",
              subtitle = "Notable mentions are 'chopper' in season 4 and 'LaFleur' in season 5")
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 <br />
 
@@ -137,7 +163,7 @@ scrape\_episode\_transcripts.Rmd file.
              title = "Some words are very characteristic of certain Lost characters",
              subtitle = "Notable mentions are 'dude' for Hurley and 'Freckles' for Sawyer")
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
 <br />
 
@@ -163,7 +189,7 @@ scrape\_episode\_transcripts.Rmd file.
              title = "Different characters have different core emotions their word choice conveys",
              subtitle = "Notable mentions are anger for Sawyer and positive emotions for Desmond")
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
 <br />
 
@@ -193,6 +219,6 @@ similar based on their use of language.
              y = NULL,
              title = "Similarities of characters based on the emotional profile of words they use")
 
-![](lost_transcript_analysis_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](C:/Users/mattc/Documents/projects/lost_transcript_analysis/README_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
 <br /> <br /> <br /> <br /> <br />
