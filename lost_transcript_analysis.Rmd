@@ -15,6 +15,9 @@ library(tidyverse)
 library(tidytext)
 library(scales)
 library(glue)
+library(ggimage)
+library(jpeg)
+library(grid)
 ```
 
 Below reads in the data I scraped from lostpedia.fandom.com. The Rmarkdown to scrape episode transcripts can be found in the scrape_episode_transcripts.Rmd file.
@@ -32,18 +35,26 @@ lost <- lost %>%
 ### Which Lost characters have the most lines?
 
 ```{r}
+bg_img <- readJPEG("images/dharma_logo_alpha_10.jpg")
+
+top_n  <- 30
+
 lost %>%
-    mutate(character = fct_lump(character, 30)) %>%
+    mutate(character = fct_lump(character, top_n)) %>%
     filter(character != "Other") %>%
     count(character) %>%
     mutate(character = fct_reorder(character, n)) %>%
     ggplot(aes(n, character)) +
-    geom_col() +
-    labs(x = "Count",
+    annotation_custom(rasterGrob(bg_img, width = unit(1, "npc"), height = unit(1, "npc")), 
+                  -Inf, Inf, -Inf, Inf) +
+    geom_col(alpha = 0.85) +
+    labs(x = "Lines",
          y = NULL,
-         title = "Jack, Sawyer, and Locke have the most lines",
-         subtitle = "The top 30 characters are shown") +
-    scale_x_continuous(labels = comma_format())
+         title = "Jack, Sawyer, and Locke have the most lines in LOST",
+         subtitle = glue("The top {top_n} characters are shown")) +
+    scale_x_continuous(labels = comma_format()) +
+    theme(plot.title = element_text(size = 18, face = "bold"),
+          plot.subtitle = element_text(size = 12, color = "grey30"))
 ```
 
 <br />
@@ -51,6 +62,9 @@ lost %>%
 ### Which characters have the most lines per season?
 
 ```{r}
+# https://stackoverflow.com/questions/44688623/adding-custom-images-to-ggplot-facets
+# https://lostpedia.fandom.com/wiki/DHARMA_Initiative_stations
+
 lost %>%
     count(season, character) %>%
     group_by(season) %>%
