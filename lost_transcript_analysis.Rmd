@@ -110,7 +110,7 @@ plot_top_lines(plot_2_data, n, character, season, "Season 1", "images/the_arrow_
 
 ### How has the characters with the most lines changed over six seasons?
 
-```{r, fig.width = 8, fig.height = 6.5}
+```{r, fig.width = 8, fig.height = 6}
 character_counts <- lost %>%
     count(character, sort = TRUE)
 
