@@ -9,6 +9,7 @@ library(ggimage)
 library(jpeg)
 library(grid)
 library(patchwork)
+library(tidylo)
 ```
 
 ``` r
@@ -61,11 +62,11 @@ lost %>%
 ### Which characters have the most lines per season?
 
 ``` r
-plot_top_lines <- function(tbl, season_n, bg_img, x_label = NULL){
+plot_top_lines <- function(tbl, x, y, season_n, bg_img, x_label = NULL){
     tbl %>%
         filter(season == glue("Season {season_n}")) %>%
-        mutate(character = fct_reorder(character, n)) %>%
-        ggplot(aes(n, character)) +
+        mutate({{y}} := fct_reorder({{y}}, {{x}})) %>%
+        ggplot(aes({{x}}, {{y}})) +
         annotation_custom(rasterGrob(readPNG(bg_img),
                                      width = unit(1, "npc"),
                                      height = unit(1, "npc")),
@@ -85,12 +86,12 @@ plot_2_data <- lost %>%
     mutate(character = if_else(character == "Christian Shephard", "Christian", character)) %>%
     mutate(season = glue("Season {season}"))
 
-plot_top_lines(plot_2_data, 1, "images/the_arrow_alpha_10.png") + 
-    plot_top_lines(plot_2_data, 2, "images/the_flame_alpha_10.png") +
-    plot_top_lines(plot_2_data, 3, "images/the_hydra_alpha_10.png") +
-    plot_top_lines(plot_2_data, 4, "images/the_lamp_post_alpha_10.png") +
-    plot_top_lines(plot_2_data, 5, "images/the_looking_glass_alpha_10.png", "Lines") +
-    plot_top_lines(plot_2_data, 6, "images/the_orchid_alpha_10.png") +
+plot_top_lines(plot_2_data, n, character, 1, "images/the_arrow_alpha_10.png") + 
+    plot_top_lines(plot_2_data, n, character, 2, "images/the_flame_alpha_10.png") +
+    plot_top_lines(plot_2_data, n, character, 3, "images/the_hydra_alpha_10.png") +
+    plot_top_lines(plot_2_data, n, character, 4, "images/the_lamp_post_alpha_10.png") +
+    plot_top_lines(plot_2_data, n, character, 5, "images/the_looking_glass_alpha_10.png", "Lines") +
+    plot_top_lines(plot_2_data, n, character, 6, "images/the_orchid_alpha_10.png") +
     plot_annotation(title = "Jack has the most lines for all seasons except season 5",
                     subtitle = "The top 20 characters for each season are shown")
 ```
@@ -145,26 +146,23 @@ lost %>%
 ### Which words are most characteristic of each Lost season?
 
 ``` r
-library(tidylo)
-
-lost %>%
+plot_4_data <- lost %>%
     unnest_tokens(word, line) %>%
     count(season, word, sort = TRUE) %>%
     bind_log_odds(season, word, n) %>%
     group_by(season) %>%
     slice_max(log_odds_weighted, n = 20) %>%
     ungroup() %>%
-    mutate(word = reorder_within(word, log_odds_weighted, season)) %>%
-    mutate(season = glue("Season {season}")) %>%
-    ggplot(aes(log_odds_weighted, word, fill = factor(season))) +
-    geom_col() +
-    facet_wrap(~season, scales = "free_y") +
-    scale_y_reordered() +
-    theme(legend.position = "none") +
-    labs(x = "Weighted log odds",
-         y = NULL,
-         title = "Some words are very characteristic of certain Lost seasons",
-         subtitle = "Notable mentions are 'chopper' in season 4 and 'LaFleur' in season 5")
+    mutate(season = glue("Season {season}"))
+
+plot_top_lines(plot_4_data, log_odds_weighted, word, 1, "images/the_orchid_alpha_10.png") + 
+    plot_top_lines(plot_4_data, log_odds_weighted, word, 2, "images/the_pearl_alpha_10.png") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, 3, "images/the_staff_alpha_10.png") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, 4, "images/the_swam_alpha_10.png") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, 5, "images/the_tempest_alpha_10.png", "Weighted Log Odds") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, 6, "images/the_arrow_alpha_10.png") +
+    plot_annotation(title = "Some words are very characteristic of certain Lost seasons",
+                    subtitle = "Notable mentions are 'chopper' in season 4 and 'LaFleur' in season 5")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
