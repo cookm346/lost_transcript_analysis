@@ -83,7 +83,7 @@ plot_top_lines <- function(tbl, x, y, facet_var, facet, bg_img, x_label = NULL, 
 plot_2_data <- lost %>%
     count(season, character) %>%
     group_by(season) %>%
-    slice_max(n, n = 20) %>% 
+    slice_max(n, n = 15) %>% 
     ungroup() %>%
     mutate(character = if_else(character == "Christian Shephard", "Christian", character)) %>%
     mutate(season = glue("Season {season}"))
@@ -95,7 +95,7 @@ plot_top_lines(plot_2_data, n, character, season, "Season 1", "images/the_arrow_
     plot_top_lines(plot_2_data, n, character, season, "Season 5", "images/the_looking_glass_alpha_10.png", "Lines") +
     plot_top_lines(plot_2_data, n, character, season, "Season 6", "images/the_orchid_alpha_10.png") +
     plot_annotation(title = "Jack has the most lines for all seasons except season 5",
-                    subtitle = "The top 20 characters for each season are shown")
+                    subtitle = "The top 15 characters for each season are shown")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
@@ -279,4 +279,4 @@ plot_top_lines(plot_7_data, correlation, item1, item2, "Ben", "images/the_orchid
 
 ![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
-<br /> <br /> <br /> <br /> <br />
+<br /> <br /> <br /> <br /> <br /> <br />
