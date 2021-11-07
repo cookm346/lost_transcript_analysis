@@ -149,7 +149,7 @@ lost %>%
 
 ### Which words are most characteristic of each Lost season?
 
-```{r}
+```{r, fig.width = 9}
 plot_4_data <- lost %>%
     unnest_tokens(word, line) %>%
     count(season, word, sort = TRUE) %>%
