@@ -52,7 +52,9 @@ lost %>%
          title = "Jack, Sawyer, and Locke have the most lines in LOST",
          subtitle = glue("The top {top_n} characters are shown")) +
     scale_x_continuous(labels = comma_format()) +
-    theme_minimal()
+    theme_minimal() +
+    theme(plot.title = element_text(size = 18, face = "bold"),
+          plot.subtitle = element_text(size = 12, color = "grey30"))
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
@@ -136,7 +138,9 @@ lost %>%
     scale_color_manual(values = c("#909090", "#7e7e7e", "#6c6c6c", "#5a5a5a", 
                                   "#484848", "#363636", "#242424", "#121212", "#000000")) +
     theme_minimal() +
-    theme(legend.position = "none")
+    theme(legend.position = "none",
+          plot.title = element_text(size = 18, face = "bold"),
+          plot.subtitle = element_text(size = 12, color = "grey30"))
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)

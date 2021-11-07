@@ -5,7 +5,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 8, fig.height = 6.5)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ### Lost transcript analysis
@@ -43,7 +43,7 @@ lost <- lost %>%
 
 ### Which Lost characters have the most lines?
 
-```{r}
+```{r, fig.width = 8, fig.height = 6.5}
 bg_img <- readPNG("images/dharma_logo_alpha_10.png")
 
 top_n  <- 30
@@ -62,14 +62,16 @@ lost %>%
          title = "Jack, Sawyer, and Locke have the most lines in LOST",
          subtitle = glue("The top {top_n} characters are shown")) +
     scale_x_continuous(labels = comma_format()) +
-    theme_minimal()
+    theme_minimal() +
+    theme(plot.title = element_text(size = 18, face = "bold"),
+          plot.subtitle = element_text(size = 12, color = "grey30"))
 ```
 
 <br />
 
 ### Which characters have the most lines per season?
 
-```{r, fig.width = 9}
+```{r, fig.width = 9, fig.height = 6.5}
 plot_top_lines <- function(tbl, x, y, facet_var, facet, bg_img, x_label = NULL, color = "grey35"){
     tbl %>%
         filter({{facet_var}} == facet) %>%
@@ -108,7 +110,7 @@ plot_top_lines(plot_2_data, n, character, season, "Season 1", "images/the_arrow_
 
 ### How has the characters with the most lines changed over six seasons?
 
-```{r}
+```{r, fig.width = 8, fig.height = 6.5}
 character_counts <- lost %>%
     count(character, sort = TRUE)
 
@@ -142,14 +144,16 @@ lost %>%
     scale_color_manual(values = c("#909090", "#7e7e7e", "#6c6c6c", "#5a5a5a", 
                                   "#484848", "#363636", "#242424", "#121212", "#000000")) +
     theme_minimal() +
-    theme(legend.position = "none")
+    theme(legend.position = "none",
+          plot.title = element_text(size = 18, face = "bold"),
+          plot.subtitle = element_text(size = 12, color = "grey30"))
 ```
 
 <br />
 
 ### Which words are most characteristic of each Lost season?
 
-```{r, fig.width = 9}
+```{r, fig.width = 9, fig.height = 6.5}
 plot_4_data <- lost %>%
     unnest_tokens(word, line) %>%
     count(season, word, sort = TRUE) %>%
