@@ -71,7 +71,7 @@ lost %>%
 
 ### Which characters have the most lines per season?
 
-```{r, fig.width = 9, fig.height = 6.5}
+```{r, fig.width = 8, fig.height = 5.5}
 plot_top_lines <- function(tbl, x, y, facet_var, facet, bg_img, x_label = NULL, color = "grey35"){
     tbl %>%
         filter({{facet_var}} == facet) %>%
@@ -273,7 +273,6 @@ plot_top_lines(plot_7_data, correlation, item1, item2, "Ben", "images/the_orchid
                     subtitle = "Note that similarity is not symettrical (e.g., Desmond is most similar to Sayid, but Sayid is not most similar to Desmond)")
 ```
 
-<br />
 <br />
 <br />
 <br />
