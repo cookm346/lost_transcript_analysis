@@ -153,13 +153,13 @@ lost %>%
 
 ### Which words are most characteristic of each Lost season?
 
-```{r, fig.width = 9, fig.height = 6.5}
+```{r, fig.width = 8, fig.height = 6.5}
 plot_4_data <- lost %>%
     unnest_tokens(word, line) %>%
     count(season, word, sort = TRUE) %>%
     bind_log_odds(season, word, n) %>%
     group_by(season) %>%
-    slice_max(log_odds_weighted, n = 20) %>%
+    slice_max(log_odds_weighted, n = 15) %>%
     ungroup() %>%
     mutate(season = glue("Season {season}"))
 
@@ -177,7 +177,7 @@ plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 1", "images
 
 ### Which words are most characteristic of each Lost character?
 
-```{r, fig.width = 9, fig.height = 8}
+```{r, fig.width = 8, fig.height = 8}
 plot_5_data <- lost %>%
     semi_join(character_counts %>% head(top_n_characters)) %>%
     unnest_tokens(word, line) %>%
@@ -204,7 +204,7 @@ plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Ben", "images/t
 
 ### Which emotions are most related to which Lost characters?
 
-```{r, fig.width = 9, fig.height = 8}
+```{r, fig.width = 8, fig.height = 8}
 library(textdata)
 
 plot_6_data <- lost %>%   
@@ -248,7 +248,7 @@ plot_top_lines(plot_6_data, prop, character, sentiment, "positive", "images/the_
 
 This analysis compares the emotional profile for each of the top {r top_n_characters} characters to determine which characters are most similar based on their use of language.
 
-```{r, fig.width = 9, fig.height = 8}
+```{r, fig.width = 8, fig.height = 8}
 library(widyr)
     
 plot_7_data <- lost %>%   

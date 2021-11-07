@@ -155,7 +155,7 @@ plot_4_data <- lost %>%
     count(season, word, sort = TRUE) %>%
     bind_log_odds(season, word, n) %>%
     group_by(season) %>%
-    slice_max(log_odds_weighted, n = 20) %>%
+    slice_max(log_odds_weighted, n = 15) %>%
     ungroup() %>%
     mutate(season = glue("Season {season}"))
 
