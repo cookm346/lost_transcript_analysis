@@ -62,19 +62,19 @@ lost %>%
 ### Which characters have the most lines per season?
 
 ``` r
-plot_top_lines <- function(tbl, x, y, season_n, bg_img, x_label = NULL){
+plot_top_lines <- function(tbl, x, y, facet_var, facet, bg_img, x_label = NULL, color = "grey35"){
     tbl %>%
-        filter(season == glue("Season {season_n}")) %>%
+        filter({{facet_var}} == facet) %>%
         mutate({{y}} := fct_reorder({{y}}, {{x}})) %>%
         ggplot(aes({{x}}, {{y}})) +
         annotation_custom(rasterGrob(readPNG(bg_img),
                                      width = unit(1, "npc"),
                                      height = unit(1, "npc")),
                           -Inf, Inf, -Inf, Inf) +
-        geom_col() +
+        geom_col(fill = color, alpha = 0.85) +
         labs(x = x_label,
              y = NULL,
-             title = glue("Season {season_n}")) +
+             title = facet) +
         theme_minimal()
 }
 
@@ -86,12 +86,12 @@ plot_2_data <- lost %>%
     mutate(character = if_else(character == "Christian Shephard", "Christian", character)) %>%
     mutate(season = glue("Season {season}"))
 
-plot_top_lines(plot_2_data, n, character, 1, "images/the_arrow_alpha_10.png") + 
-    plot_top_lines(plot_2_data, n, character, 2, "images/the_flame_alpha_10.png") +
-    plot_top_lines(plot_2_data, n, character, 3, "images/the_hydra_alpha_10.png") +
-    plot_top_lines(plot_2_data, n, character, 4, "images/the_lamp_post_alpha_10.png") +
-    plot_top_lines(plot_2_data, n, character, 5, "images/the_looking_glass_alpha_10.png", "Lines") +
-    plot_top_lines(plot_2_data, n, character, 6, "images/the_orchid_alpha_10.png") +
+plot_top_lines(plot_2_data, n, character, season, "Season 1", "images/the_arrow_alpha_10.png") + 
+    plot_top_lines(plot_2_data, n, character, season, "Season 2", "images/the_flame_alpha_10.png") +
+    plot_top_lines(plot_2_data, n, character, season, "Season 3", "images/the_hydra_alpha_10.png") +
+    plot_top_lines(plot_2_data, n, character, season, "Season 4", "images/the_lamp_post_alpha_10.png") +
+    plot_top_lines(plot_2_data, n, character, season, "Season 5", "images/the_looking_glass_alpha_10.png", "Lines") +
+    plot_top_lines(plot_2_data, n, character, season, "Season 6", "images/the_orchid_alpha_10.png") +
     plot_annotation(title = "Jack has the most lines for all seasons except season 5",
                     subtitle = "The top 20 characters for each season are shown")
 ```
@@ -155,12 +155,12 @@ plot_4_data <- lost %>%
     ungroup() %>%
     mutate(season = glue("Season {season}"))
 
-plot_top_lines(plot_4_data, log_odds_weighted, word, 1, "images/the_orchid_alpha_10.png") + 
-    plot_top_lines(plot_4_data, log_odds_weighted, word, 2, "images/the_pearl_alpha_10.png") +
-    plot_top_lines(plot_4_data, log_odds_weighted, word, 3, "images/the_staff_alpha_10.png") +
-    plot_top_lines(plot_4_data, log_odds_weighted, word, 4, "images/the_swam_alpha_10.png") +
-    plot_top_lines(plot_4_data, log_odds_weighted, word, 5, "images/the_tempest_alpha_10.png", "Weighted Log Odds") +
-    plot_top_lines(plot_4_data, log_odds_weighted, word, 6, "images/the_arrow_alpha_10.png") +
+plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 1", "images/the_orchid_alpha_10.png") + 
+    plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 2", "images/the_pearl_alpha_10.png") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 3", "images/the_staff_alpha_10.png") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 4", "images/the_swan_alpha_10.png") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 5", "images/the_tempest_alpha_10.png", "Weighted Log Odds") +
+    plot_top_lines(plot_4_data, log_odds_weighted, word, season, "Season 6", "images/the_arrow_alpha_10.png") +
     plot_annotation(title = "Some words are very characteristic of certain Lost seasons",
                     subtitle = "Notable mentions are 'chopper' in season 4 and 'LaFleur' in season 5")
 ```
@@ -172,24 +172,26 @@ plot_top_lines(plot_4_data, log_odds_weighted, word, 1, "images/the_orchid_alpha
 ### Which words are most characteristic of each Lost character?
 
 ``` r
-lost %>%
+plot_5_data <- lost %>%
     semi_join(character_counts %>% head(top_n_characters)) %>%
     unnest_tokens(word, line) %>%
     count(character, word, sort = TRUE) %>%
     bind_log_odds(character, word, n) %>%
     group_by(character) %>%
     slice_max(log_odds_weighted, n = 15) %>%
-    ungroup() %>%
-    mutate(word = reorder_within(word, log_odds_weighted, character)) %>%
-    ggplot(aes(log_odds_weighted, word, fill = character)) +
-    geom_col() +
-    facet_wrap(~character, scales = "free_y") +
-    scale_y_reordered() +
-    theme(legend.position = "none") +
-    labs(x = "Weighted log odds",
-         y = NULL,
-         title = "Some words are very characteristic of certain Lost characters",
-         subtitle = "Notable mentions are 'dude' for Hurley and 'Freckles' for Sawyer")
+    ungroup()
+
+plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Ben", "images/the_orchid_alpha_10.png") + 
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Charlie", "images/the_pearl_alpha_10.png") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Desmond", "images/the_arrow_alpha_10.png") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Hurley", "images/the_swan_alpha_10.png") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Jack", "images/the_staff_alpha_10.png") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Kate", "images/the_lamp_post_alpha_10.png") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Locke", "images/the_hydra_alpha_10.png") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Sawyer", "images/the_flame_alpha_10.png", "Weighted Log Odds") +
+    plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Sayid", "images/the_looking_glass_alpha_10.png") +
+    plot_annotation(title = "Some words are very characteristic of certain Lost characters",
+                    subtitle = "Notable mentions are 'dude' for Hurley and 'Freckles' for Sawyer")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
@@ -201,23 +203,39 @@ lost %>%
 ``` r
 library(textdata)
 
-lost %>%   
+plot_6_data <- lost %>%   
     semi_join(character_counts %>% head(9)) %>%
     unnest_tokens(word, line) %>%
     inner_join(lexicon_nrc()) %>%
     add_count(character) %>%
     count(character, sentiment, n, name = "sentiment_n") %>%
-    mutate(prop = sentiment_n / n) %>%
-    mutate(character = reorder_within(character, prop, sentiment)) %>%
-    ggplot(aes(prop, character, fill = sentiment)) +
-    geom_col() +
-    facet_wrap(~sentiment, scales = "free_y") +
-    scale_y_reordered() +
-    theme(legend.position = "none") +
-    labs(x = "Proportion of words",
-         y = NULL,
-         title = "Different characters have different core emotions their word choice conveys",
-         subtitle = "Notable mentions are anger for Sawyer and positive emotions for Desmond")
+    mutate(prop = sentiment_n / n)
+
+layout <- "
+AABC
+AADE
+FFGH
+FFIJ
+"
+
+pos_color_main <- "#5b664e"
+pos_color <- "#959e8b"
+neg_color_main <- "#5c5050"
+neg_color <- "#a89b9b"
+
+plot_top_lines(plot_6_data, prop, character, sentiment, "positive", "images/the_arrow_alpha_10.png", color = pos_color_main) + 
+    plot_top_lines(plot_6_data, prop, character, sentiment, "joy", "images/the_flame_alpha_10.png", color = pos_color) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "anticipation", "images/the_hydra_alpha_10.png", color = pos_color) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "surprise", "images/the_lamp_post_alpha_10.png", color = pos_color) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "trust", "images/the_looking_glass_alpha_10.png", color = pos_color) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "negative", "images/the_orchid_alpha_10.png", "Proportion of Words", color = neg_color_main) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "fear", "images/the_pearl_alpha_10.png", color = neg_color) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "sadness", "images/the_staff_alpha_10.png", color = neg_color) +
+    plot_top_lines(plot_6_data, prop, character, sentiment, "disgust", "images/the_swan_alpha_10.png", "Proportion of Words", color = neg_color) +
+        plot_top_lines(plot_6_data, prop, character, sentiment, "anger", "images/the_tempest_alpha_10.png", "Proportion of Words", color = neg_color) +
+    plot_annotation(title = "Different characters have different core emotions their word choice conveys",
+                    subtitle = "Notable mentions are anger for Sawyer and positive emotions for Desmond") +
+    plot_layout(design = layout)
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
@@ -233,23 +251,26 @@ similar based on their use of language.
 ``` r
 library(widyr)
     
-lost %>%   
+plot_7_data <- lost %>%   
     semi_join(character_counts %>% head(top_n_characters)) %>%
     unnest_tokens(word, line) %>%
     inner_join(lexicon_nrc()) %>%
     add_count(character) %>%
     count(character, sentiment, n, name = "sentiment_n") %>%
     mutate(prop = sentiment_n / n) %>%
-    pairwise_cor(character, sentiment, prop) %>% 
-    mutate(item1 = reorder_within(item1, correlation, item2)) %>%
-    ggplot(aes(correlation, item1, fill = item2)) +
-    geom_col() +
-    facet_wrap(~item2, scales = "free_y") +
-    scale_y_reordered() +
-    theme(legend.position = "none") +
-    labs(x = "Correlation",
-         y = NULL,
-         title = "Similarities of characters based on the emotional profile of words they use")
+    pairwise_cor(character, sentiment, prop)
+
+plot_top_lines(plot_7_data, correlation, item1, item2, "Ben", "images/the_orchid_alpha_10.png") + 
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Charlie", "images/the_pearl_alpha_10.png") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Desmond", "images/the_arrow_alpha_10.png") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Hurley", "images/the_swan_alpha_10.png") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Jack", "images/the_staff_alpha_10.png") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Kate", "images/the_lamp_post_alpha_10.png") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Locke", "images/the_hydra_alpha_10.png") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Sawyer", "images/the_flame_alpha_10.png", "Correlation") +
+    plot_top_lines(plot_7_data, correlation, item1, item2, "Sayid", "images/the_looking_glass_alpha_10.png") +
+    plot_annotation(title = "Similarities of characters based on the emotional profile of words they use",
+                    subtitle = "Note that similarity is not symettrical (e.g., Desmond is most similar to Sayid, but Sayid is not most similar to Desmond)")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
