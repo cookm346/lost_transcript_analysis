@@ -140,6 +140,7 @@ lost %>%
          subtitle = "Note: Desmond and Ben have no rank before they arrive in seasons 2 and 3, respectively") +
     scale_color_manual(values = c("#909090", "#7e7e7e", "#6c6c6c", "#5a5a5a", 
                                   "#484848", "#363636", "#242424", "#121212", "#000000")) +
+    theme_minimal() +
     theme(legend.position = "none")
 ```
 
