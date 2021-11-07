@@ -5,7 +5,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 8, fig.height = 6)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 8, fig.height = 6.5)
 ```
 
 ### Lost transcript analysis
@@ -18,6 +18,7 @@ library(glue)
 library(ggimage)
 library(jpeg)
 library(grid)
+library(patchwork)
 ```
 
 
@@ -42,7 +43,7 @@ lost <- lost %>%
 ### Which Lost characters have the most lines?
 
 ```{r}
-bg_img <- readJPEG("images/dharma_logo_alpha_10.jpg")
+bg_img <- readPNG("images/dharma_logo_alpha_10.png")
 
 top_n  <- 30
 
@@ -59,7 +60,8 @@ lost %>%
          y = NULL,
          title = "Jack, Sawyer, and Locke have the most lines in LOST",
          subtitle = glue("The top {top_n} characters are shown")) +
-    scale_x_continuous(labels = comma_format())
+    scale_x_continuous(labels = comma_format()) +
+    theme_minimal()
 ```
 
 <br />
@@ -67,26 +69,38 @@ lost %>%
 ### Which characters have the most lines per season?
 
 ```{r}
-# https://stackoverflow.com/questions/44688623/adding-custom-images-to-ggplot-facets
-# https://lostpedia.fandom.com/wiki/DHARMA_Initiative_stations
+plot_top_lines <- function(tbl, season_n, bg_img, x_label = NULL){
+    tbl %>%
+        filter(season == glue("Season {season_n}")) %>%
+        mutate(character = fct_reorder(character, n)) %>%
+        ggplot(aes(n, character)) +
+        annotation_custom(rasterGrob(readPNG(bg_img),
+                                     width = unit(1, "npc"),
+                                     height = unit(1, "npc")),
+                          -Inf, Inf, -Inf, Inf) +
+        geom_col() +
+        labs(x = x_label,
+             y = NULL,
+             title = glue("Season {season_n}")) +
+        theme_minimal()
+}
 
-lost %>%
+plot_2_data <- lost %>%
     count(season, character) %>%
     group_by(season) %>%
     slice_max(n, n = 20) %>% 
     ungroup() %>%
     mutate(character = if_else(character == "Christian Shephard", "Christian", character)) %>%
-    mutate(character = reorder_within(character, n, season)) %>%
-    mutate(season = glue("Season {season}")) %>%
-    ggplot(aes(n, character, fill = season)) +
-    geom_col() +
-    facet_wrap(~season, scales = "free") +
-    labs(x = "Count",
-         y = NULL,
-         title = "Jack has the most lines for all seasons except season 5",
-         subtitle = "The top 20 characters are shown") +
-    scale_y_reordered() +
-    theme(legend.position = "none")
+    mutate(season = glue("Season {season}"))
+
+plot_top_lines(plot_2_data, 1, "images/the_arrow_alpha_10.png") + 
+    plot_top_lines(plot_2_data, 2, "images/the_flame_alpha_10.png") +
+    plot_top_lines(plot_2_data, 3, "images/the_hydra_alpha_10.png") +
+    plot_top_lines(plot_2_data, 4, "images/the_lamp_post_alpha_10.png") +
+    plot_top_lines(plot_2_data, 5, "images/the_looking_glass_alpha_10.png", "Lines") +
+    plot_top_lines(plot_2_data, 6, "images/the_orchid_alpha_10.png") +
+    plot_annotation(title = "Jack has the most lines for all seasons except season 5",
+                    subtitle = "The top 20 characters for each season are shown")
 ```
 
 <br />
