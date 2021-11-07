@@ -68,7 +68,7 @@ lost %>%
 
 ### Which characters have the most lines per season?
 
-```{r}
+```{r, fig.width = 9}
 plot_top_lines <- function(tbl, season_n, bg_img, x_label = NULL){
     tbl %>%
         filter(season == glue("Season {season_n}")) %>%
