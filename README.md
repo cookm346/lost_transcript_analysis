@@ -227,16 +227,19 @@ pos_color <- "#959e8b"
 neg_color_main <- "#5c5050"
 neg_color <- "#a89b9b"
 
-plot_top_lines(plot_6_data, prop, character, sentiment, "positive", "images/the_arrow_alpha_10.png", color = pos_color_main) + 
-    (plot_top_lines(plot_6_data, prop, character, sentiment, "joy", "images/the_flame_alpha_10.png", color = pos_color) + scale_x_continuous(breaks = c(0, 0.05, 0.1))) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "anticipation", "images/the_hydra_alpha_10.png", color = pos_color) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "surprise", "images/the_lamp_post_alpha_10.png", color = pos_color) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "trust", "images/the_looking_glass_alpha_10.png", color = pos_color) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "negative", "images/the_orchid_alpha_10.png", "Proportion of Words", color = neg_color_main) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "fear", "images/the_pearl_alpha_10.png", color = neg_color) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "sadness", "images/the_staff_alpha_10.png", color = neg_color) +
-    plot_top_lines(plot_6_data, prop, character, sentiment, "disgust", "images/the_swan_alpha_10.png", "Proportion of Words", color = neg_color) +
-        plot_top_lines(plot_6_data, prop, character, sentiment, "anger", "images/the_tempest_alpha_10.png", "Proportion of Words", color = neg_color) +
+s_main  <- scale_x_continuous(breaks = c(0, 0.04, 0.08, 0.12, 0.16, 0.2), limits = c(0, 0.2))
+s <- scale_x_continuous(breaks = c(0, 0.05, 0.1, 0.15), limits = c(0, 0.15))
+
+(plot_top_lines(plot_6_data, prop, character, sentiment, "positive", "images/the_arrow_alpha_10.png", color = pos_color_main) + s_main) + 
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "joy", "images/the_flame_alpha_10.png", color = pos_color) + s) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "anticipation", "images/the_hydra_alpha_10.png", color = pos_color) + s) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "surprise", "images/the_lamp_post_alpha_10.png", color = pos_color) + s) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "trust", "images/the_looking_glass_alpha_10.png", color = pos_color) + s) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "negative", "images/the_orchid_alpha_10.png", "Proportion of Words", color = neg_color_main) + s_main) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "fear", "images/the_pearl_alpha_10.png", color = neg_color) + s) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "sadness", "images/the_staff_alpha_10.png", color = neg_color) + s) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "disgust", "images/the_swan_alpha_10.png", "Proportion of Words", color = neg_color) + s) +
+        (plot_top_lines(plot_6_data, prop, character, sentiment, "anger", "images/the_tempest_alpha_10.png", "Proportion of Words", color = neg_color) + s) +
     plot_annotation(title = "Different characters have different core emotions",
                     subtitle = "Notable mentions are anger for Sawyer and positive emotions for Desmond") +
     plot_layout(design = layout)
