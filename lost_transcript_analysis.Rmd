@@ -20,6 +20,8 @@ library(jpeg)
 library(grid)
 library(patchwork)
 library(tidylo)
+library(textdata)
+library(widyr)
 ```
 
 
@@ -205,8 +207,6 @@ plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Ben", "images/t
 ### Which emotions are most related to which Lost characters?
 
 ```{r, fig.width = 8, fig.height = 8}
-library(textdata)
-
 plot_6_data <- lost %>%   
     semi_join(character_counts %>% head(9)) %>%
     unnest_tokens(word, line) %>%
@@ -249,8 +249,6 @@ plot_top_lines(plot_6_data, prop, character, sentiment, "positive", "images/the_
 This analysis compares the emotional profile for each of the top {r top_n_characters} characters to determine which characters are most similar based on their use of language.
 
 ```{r, fig.width = 8, fig.height = 8}
-library(widyr)
-    
 plot_7_data <- lost %>%   
     semi_join(character_counts %>% head(top_n_characters)) %>%
     unnest_tokens(word, line) %>%

@@ -10,6 +10,8 @@ library(jpeg)
 library(grid)
 library(patchwork)
 library(tidylo)
+library(textdata)
+library(widyr)
 ```
 
 ``` r
@@ -205,8 +207,6 @@ plot_top_lines(plot_5_data, log_odds_weighted, word, character, "Ben", "images/t
 ### Which emotions are most related to which Lost characters?
 
 ``` r
-library(textdata)
-
 plot_6_data <- lost %>%   
     semi_join(character_counts %>% head(9)) %>%
     unnest_tokens(word, line) %>%
@@ -253,8 +253,6 @@ top_n\_characters} characters to determine which characters are most
 similar based on their use of language.
 
 ``` r
-library(widyr)
-    
 plot_7_data <- lost %>%   
     semi_join(character_counts %>% head(top_n_characters)) %>%
     unnest_tokens(word, line) %>%
