@@ -276,7 +276,7 @@ s <- scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1), limits = c(0, 1))
     (plot_top_lines(plot_7_data, correlation, item1, item2, "Sawyer", "images/the_flame_alpha_10.png", "Correlation") + s) +
     (plot_top_lines(plot_7_data, correlation, item1, item2, "Sayid", "images/the_looking_glass_alpha_10.png") + s) +
     plot_annotation(title = "Similarities of characters based on their emotional word profile",
-                    subtitle = "Note that similarity is not symettrical (e.g., Desmond is most similar to Sayid, but Sayid is not most similar to Desmond)")
+                    subtitle = "Note that similarity is not symettrical (e.g., Desmond is most similar to Sayid, but not vice versa)")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
