@@ -260,15 +260,17 @@ plot_7_data <- lost %>%
     mutate(prop = sentiment_n / n) %>%
     pairwise_cor(character, sentiment, prop)
 
-plot_top_lines(plot_7_data, correlation, item1, item2, "Ben", "images/the_orchid_alpha_10.png") + 
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Charlie", "images/the_pearl_alpha_10.png") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Desmond", "images/the_arrow_alpha_10.png") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Hurley", "images/the_swan_alpha_10.png") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Jack", "images/the_staff_alpha_10.png") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Kate", "images/the_lamp_post_alpha_10.png") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Locke", "images/the_hydra_alpha_10.png") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Sawyer", "images/the_flame_alpha_10.png", "Correlation") +
-    plot_top_lines(plot_7_data, correlation, item1, item2, "Sayid", "images/the_looking_glass_alpha_10.png") +
+s <- scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1), limits = c(0, 1))
+
+(plot_top_lines(plot_7_data, correlation, item1, item2, "Ben", "images/the_orchid_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Charlie", "images/the_pearl_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Desmond", "images/the_arrow_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Hurley", "images/the_swan_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Jack", "images/the_staff_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Kate", "images/the_lamp_post_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Locke", "images/the_hydra_alpha_10.png") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Sawyer", "images/the_flame_alpha_10.png", "Correlation") + s) +
+    (plot_top_lines(plot_7_data, correlation, item1, item2, "Sayid", "images/the_looking_glass_alpha_10.png") + s) +
     plot_annotation(title = "Similarities of characters based on their emotional word profile",
                     subtitle = "Note that similarity is not symettrical (e.g., Desmond is most similar to Sayid, but Sayid is not most similar to Desmond)")
 ```
