@@ -228,7 +228,7 @@ neg_color_main <- "#5c5050"
 neg_color <- "#a89b9b"
 
 plot_top_lines(plot_6_data, prop, character, sentiment, "positive", "images/the_arrow_alpha_10.png", color = pos_color_main) + 
-    plot_top_lines(plot_6_data, prop, character, sentiment, "joy", "images/the_flame_alpha_10.png", color = pos_color) +
+    (plot_top_lines(plot_6_data, prop, character, sentiment, "joy", "images/the_flame_alpha_10.png", color = pos_color) + scale_x_continuous(breaks = c(0, 0.05, 0.1))) +
     plot_top_lines(plot_6_data, prop, character, sentiment, "anticipation", "images/the_hydra_alpha_10.png", color = pos_color) +
     plot_top_lines(plot_6_data, prop, character, sentiment, "surprise", "images/the_lamp_post_alpha_10.png", color = pos_color) +
     plot_top_lines(plot_6_data, prop, character, sentiment, "trust", "images/the_looking_glass_alpha_10.png", color = pos_color) +
